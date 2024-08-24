@@ -1,108 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Game</title>
-    <style>
-        body { display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #000; }
-        canvas { border: 1px solid #fff; }
-    </style>
-</head>
-<body>
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const scale = 20;
-        const rows = canvas.height / scale;
-        const cols = canvas.width / scale;
+- uses: Platane/snk@v3
+  with:
+    # github user name to read the contribution graph from (**required**)
+    # using action context var `github.repository_owner` or specified user
+    github_user_name: ${{ github.repository_owner }}
 
-        let snake = [{x: 10 * scale, y: 10 * scale}];
-        let food = {x: Math.floor(Math.random() * cols) * scale, y: Math.floor(Math.random() * rows) * scale};
-        let dx = scale;
-        let dy = 0;
-        let score = 0;
-        let gameOver = false;
+    # list of files to generate.
+    # one file per line. Each output can be customized with options as query string.
+    #
+    #  supported options:
+    #  - palette:     A preset of color, one of [github, github-dark, github-light]
+    #  - color_snake: Color of the snake
+    #  - color_dots:  Coma separated list of dots color.
+    #                 The first one is 0 contribution, then it goes from the low contribution to the highest.
+    #                 Exactly 5 colors are expected.
+    outputs: |
+      dist/github-snake.svg
+      dist/github-snake-dark.svg?palette=github-dark
+      dist/ocean.gif?color_snake=orange&color_dots=#bfd6f6,#8dbdff,#64a1f4,#4b91f1,#3c7dd9
 
-        // Handle key presses to change direction
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowUp' && dy === 0) { dx = 0; dy = -scale; }
-            if (e.key === 'ArrowDown' && dy === 0) { dx = 0; dy = scale; }
-            if (e.key === 'ArrowLeft' && dx === 0) { dx = -scale; dy = 0; }
-            if (e.key === 'ArrowRight' && dx === 0) { dx = scale; dy = 0; }
-            console.log(`Direction changed: dx=${dx}, dy=${dy}`); // Debugging line
-        });
-
-        // Draw the game state
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'green';
-            for (const segment of snake) {
-                ctx.fillRect(segment.x, segment.y, scale, scale);
-            }
-            ctx.fillStyle = 'red';
-            ctx.fillRect(food.x, food.y, scale, scale);
-            ctx.fillStyle = 'white';
-            ctx.font = '20px Arial';
-            ctx.fillText('Score: ' + score, 10, 20);
-        }
-
-        // Update the game state
-        function update() {
-            if (gameOver) return;
-
-            let head = {x: snake[0].x + dx, y: snake[0].y + dy};
-
-            // Check if snake head collides with food
-            if (head.x === food.x && head.y === food.y) {
-                snake.unshift(head);
-                score++;
-                food = {x: Math.floor(Math.random() * cols) * scale, y: Math.floor(Math.random() * rows) * scale};
-            } else {
-                snake.pop();
-                snake.unshift(head);
-            }
-
-            // Check for collisions with walls or itself
-            if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height || snake.some(segment => segment.x === head.x && segment.y === head.y)) {
-                if (!gameOver) {
-                    alert('Game Over');
-                    gameOver = true;
-                }
-                return;
-            }
-        }
-
-        // Reset game state
-        function resetGame() {
-            snake = [{x: 10 * scale, y: 10 * scale}];
-            dx = scale;
-            dy = 0;
-            score = 0;
-            gameOver = false;
-            console.log('Game reset'); // Debugging line
-        }
-
-        // Game loop function
-        function gameLoop() {
-            draw();
-            update();
-            if (!gameOver) {
-                setTimeout(gameLoop, 100); // Adjust timing if needed
-            }
-        }
-
-        // Restart the game with Enter key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && gameOver) {
-                resetGame();
-                gameLoop(); // Restart the game loop
-            }
-        });
-
-        // Start the game
-        gameLoop();
-    </script>
-</body>
-</html>
+    env:
+      # a github token is required to fetch the contribution calendar from github API
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
