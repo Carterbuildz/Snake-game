@@ -31,6 +31,7 @@
             if (e.key === 'ArrowDown' && dy === 0) { dx = 0; dy = scale; }
             if (e.key === 'ArrowLeft' && dx === 0) { dx = -scale; dy = 0; }
             if (e.key === 'ArrowRight' && dx === 0) { dx = scale; dy = 0; }
+            console.log(`Direction changed: dx=${dx}, dy=${dy}`); // Debugging line
         });
 
         // Draw the game state
@@ -80,6 +81,7 @@
             dy = 0;
             score = 0;
             gameOver = false;
+            console.log('Game reset'); // Debugging line
         }
 
         // Game loop function
