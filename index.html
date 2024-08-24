@@ -23,6 +23,7 @@
         let dx = scale;
         let dy = 0;
         let score = 0;
+        let gameOver = false;
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowUp' && dy === 0) { dx = 0; dy = -scale; }
@@ -47,6 +48,7 @@
         function update() {
             let head = {x: snake[0].x + dx, y: snake[0].y + dy};
 
+            // Check if snake head collides with food
             if (head.x === food.x && head.y === food.y) {
                 snake.unshift(head);
                 score++;
@@ -56,13 +58,23 @@
                 snake.unshift(head);
             }
 
+            // Check for collisions with walls or itself
             if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height || snake.some(segment => segment.x === head.x && segment.y === head.y)) {
-                alert('Game Over');
-                snake = [{x: 10 * scale, y: 10 * scale}];
-                dx = scale;
-                dy = 0;
-                score = 0;
+                if (!gameOver) {
+                    alert('Game Over');
+                    gameOver = true;
+                }
+                resetGame();
+            } else {
+                gameOver = false;
             }
+        }
+
+        function resetGame() {
+            snake = [{x: 10 * scale, y: 10 * scale}];
+            dx = scale;
+            dy = 0;
+            score = 0;
         }
 
         function gameLoop() {
