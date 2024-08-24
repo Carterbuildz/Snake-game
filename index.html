@@ -25,6 +25,7 @@
         let score = 0;
         let gameOver = false;
 
+        // Handle key presses to change direction
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowUp' && dy === 0) { dx = 0; dy = -scale; }
             if (e.key === 'ArrowDown' && dy === 0) { dx = 0; dy = scale; }
@@ -32,6 +33,7 @@
             if (e.key === 'ArrowRight' && dx === 0) { dx = scale; dy = 0; }
         });
 
+        // Draw the game state
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = 'green';
@@ -45,6 +47,7 @@
             ctx.fillText('Score: ' + score, 10, 20);
         }
 
+        // Update the game state
         function update() {
             if (gameOver) return;
 
@@ -70,6 +73,7 @@
             }
         }
 
+        // Reset game state
         function resetGame() {
             snake = [{x: 10 * scale, y: 10 * scale}];
             dx = scale;
@@ -78,6 +82,7 @@
             gameOver = false;
         }
 
+        // Game loop function
         function gameLoop() {
             draw();
             update();
@@ -86,14 +91,16 @@
             }
         }
 
+        // Restart the game with Enter key
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && gameOver) { // Press Enter to restart the game
+            if (e.key === 'Enter' && gameOver) {
                 resetGame();
                 gameLoop(); // Restart the game loop
             }
         });
 
-        gameLoop(); // Start the game loop
+        // Start the game
+        gameLoop();
     </script>
 </body>
 </html>
